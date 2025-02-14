@@ -3,9 +3,11 @@ package main
 import (
 	"database/sql"
 	"log"
+	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -13,8 +15,15 @@ var db *sql.DB
 
 func main() {
 	// Database connection setup
-	connStr := "user=postgres password=4545 dbname=postgres sslmode=disable"
 	var err error
+	err = godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("env error")
+	}
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_NAME")
+	connStr := "user=" + dbUser + " password=" + dbPassword + " dbname=" + dbName + " sslmode=disable"
 	db, err = sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal("Database connection error:", err)
@@ -41,5 +50,3 @@ func main() {
 	// Start the server
 	r.Run(":8080")
 }
-
-// Struct to receive JSON request
